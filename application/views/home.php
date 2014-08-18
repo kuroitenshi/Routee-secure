@@ -54,6 +54,7 @@
                             </div>
                         </div>
 
+                        </form>
 
 
                         <hr class = "gdivider">
@@ -94,8 +95,8 @@
                                 <button type="button" class="btn btn-info" id="btnRerouting"> <i class="fa fa-arrows"></i> Routing</button>
                             </div>
                         </div> <!-- justified buttons end -->
+                        </form> <!-- form post end -->
 
-                       
                     </div> <!--dissidia reporting-->
 
                 </div><!--col-lg-5-end-->	
