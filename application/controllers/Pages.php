@@ -9,10 +9,10 @@ class Pages extends CI_Controller {
      * Index Page for this controller.
      *
      * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -  
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
+     *      http://example.com/index.php/welcome
+     *  - or -  
+     *      http://example.com/index.php/welcome/index
+     *  - or -
      * Since this controller is set as the default controller in 
      * config/routes.php, it's displayed at http://example.com/
      *
@@ -24,11 +24,117 @@ class Pages extends CI_Controller {
 
         parent::__construct();
         $this->load->model('model');
+        $this->load->library('session');
+        $this->load->helper('url');
+
+        
     }
 
     public function index() {
-        $this->view_home();
+        $this->load->helper(array('form', 'url'));
+        $this->load->library('form_validation');
+
+        if($this->session->userdata('logged_in'))
+        {
+            $session_data = $this->session->userdata('logged_in');
+            $data['username'] = $session_data['username'];
+            $data['login_status'] = TRUE;
+            $this->load->view('home_head');
+            $this->load->view('home', $data);
+        }
+        else
+        {
+            $data['login_status'] = FALSE;
+            $this->load->view('home_head'); 
+            $this->load->view('home_login', $data);
+        }
+        
     }
+
+    public function login(){
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('userField', 'Username', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('passField', 'Password', 'trim|required|xss_clean|callback_check_database');
+
+        $this->form_validation->run();
+        $this->index();
+        
+            
+        
+    }
+
+    public function logout()
+     {
+        $this->session->unset_userdata('logged_in');
+        session_destroy();
+        redirect('/');
+     }
+
+
+    public function register(){
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('userRegisterField', 'Username', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('passRegisterField', 'Password', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('emailRegisterField', 'Email', 'trim|required|xss_clean|callback_check_registration');
+
+        $this->form_validation->run();
+        $this->index();
+        
+        
+
+    }
+
+    public function check_database($password)
+    {
+   
+        $username = $this->input->post('userField');
+        $result = $this->model->login($username, $password);
+
+        if($result != FALSE)
+        {
+            $sess_array = array();
+            foreach($result as $row)
+            {
+                $sess_array = array(
+                    'id' => $row->user_id,
+                    'username' => $row->username
+                );
+                $this->session->set_userdata('logged_in', $sess_array);
+            }
+            return TRUE;
+        }
+        else
+        {
+            $this->form_validation->set_message('check_database', 'Invalid username or password');
+            return false;
+        }
+    }
+
+    public function check_registration($email)
+    {
+   
+        $username = $this->input->post('userRegisterField');
+        $password = $this->input->post('passRegisterField');
+        $result = $this->model->register($username, $password, $email);
+
+        if($result)
+        {   $sess_array = array(
+                'id' => $result['user_id'],
+                'username' => $result['username']
+            );
+            $this->session->set_userdata('logged_in', $sess_array);
+            return TRUE;
+             
+            
+        }
+        else
+        {
+            $this->form_validation->set_message('check_registration', 'User already exists!');
+            return FALSE;
+            
+        }
+    }
+
 
     public function view_home() {
         $this->load->helper(array('form', 'url'));

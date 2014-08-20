@@ -1,29 +1,7 @@
-<!DOCTYPE html>
-<html lang = "en">
-
-    <head>
-        <meta charset="utf-8">
-        <title><?php $title; ?></title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Towards road less obstructed">
-        <meta name="author" content="Shawarma Proteges">
-
-
-        <link href="<?php echo base_url(); ?>/assets/css/cover.css" rel="stylesheet" type="text/css">
-        <link href="<?php echo base_url(); ?>/assets/css/fonts.css" type = "text/css" rel = "stylesheet">
-        <link href="<?php echo base_url(); ?>/assets/css/jquery.qtip.css" type="text/css" rel="stylesheet" />
-        <link href="<?php echo base_url(); ?>/assets/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
-        <link rel= "shortcut icon" href="<? echo base_url(); ?>/assets/images/routee.png">
-
-        <script src="<?php echo base_url(); ?>/assets/js/jquery-1.10.2.js"></script>     
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>  
-        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDQFSdn0OTS5bgEVYvfGMBWmkC54uk-6PM&sensor=false&libraries=places&region=ph"></script>                
-        <script type="text/javascript" src="<?php echo base_url(); ?>/assets/js/jquery.qtip.js"></script>
-        <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/imagesloaded.pkg.min.js"></script>
-        <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/home.js"></script>
-    </head>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/home.js"></script>
+</head>
     <body>        
-
+        <input name="login_status" id="login_status" type="text" value="<?php echo $login_status;?>" hidden>
 
         <div class = "container">            
             <div class = "row">                
@@ -39,7 +17,12 @@
                 </div>
                 <br/>
                 <div class = "col-md-5 col-md-offset-1">
-                    <div class = "dissidia" id="routing">
+
+                    <!-- ROUTING -->
+
+                    <div class = "dissidia"  id="routing">
+                        
+                        <p id="welcome" align = "left"> Welcome, <?php echo $username; ?>!      <a href="<?php echo base_url(); ?>index.php/pages/logout" align="right">Sign out</a></p>
                         <h2 align = "center"> Routing </h2>
                         <p align = "center"> Routee will assist you in finding the best routes possible.</p>
                         <br>
@@ -54,8 +37,7 @@
                             </div>
                         </div>
 
-                        </form>
-
+                        </form> <!-- form post end -->
 
                         <hr class = "gdivider">
                         <p align = "center">If there is a situation going on, please do not hesitate to tell us.</p>
@@ -66,7 +48,11 @@
                         </div>
                     </div> <!--dissidia routing-->
                     <br/>
+
+                    <!-- REPORTING -->
+
                     <div class ="dissidia" style  = "display:none;" id = "reporting">
+                        <p id="welcome" align = "center"> Welcome, <?php echo $username; ?>!</p>
                         <h2 align = "center"> Reporting </h2>
                         <p align = "center">Let us know what is going on.</p><br>
                         <!--Reporting form-->
@@ -96,7 +82,11 @@
                             </div>
                         </div> <!-- justified buttons end -->
                         </form> <!-- form post end -->
+                     <div id="error_box">
+                        
+                        <?php echo validation_errors(); ?>
 
+                     </div>  
                     </div> <!--dissidia reporting-->
 
                 </div><!--col-lg-5-end-->	
@@ -105,6 +95,6 @@
             </div> <!-- row end -->
         </div> <!-- container-end -->        
     </body>
-
+   
 
 </html>

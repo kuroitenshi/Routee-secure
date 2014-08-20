@@ -1,5 +1,6 @@
 
 $(document).ready(function() {
+
         $("#btnReporting").click(function() {
             $("#routing").fadeOut("fast", function() {
                 $("#reporting").fadeIn("5000");
@@ -11,6 +12,15 @@ $(document).ready(function() {
                 $("#routing").fadeIn("5000");
             });
         });
+
+        
+
+        if($('#error_box').text().trim() == ""){
+            $('#error_box').hide();
+        }else
+            $('#error_box').show();
+
+    
     
 });
 
