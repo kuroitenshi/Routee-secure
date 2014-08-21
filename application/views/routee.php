@@ -1,17 +1,18 @@
 
 
-<body onload = "routeAddress();">
+<body>
 
     <div class = "navbar navbar-default navbar-fixed-top visi">
         <a href = "index.php" class = "navbar-brand"><img src = "<?php echo base_url(); ?>assets/images/routee.png" class ="headpic"></a>
         <form class="navbar-form navbar-left appear" role="search" id="navRoute">
             <div class="form-group">
-                <input id="sourceTextBox" type="text" class="form-control" placeholder = "Where did you come from?" value='<?php echo $source; ?>'>
-                <input id="destinationTextBox" type="text" class="form-control" placeholder = "Where do you want to go?" value='<?php echo $destination; ?>'>
-                <input id="findItButton" type="button" onclick="routeAddress();" class="btn btn-default" value="Show me the way!">
+                <input id="sourceTextBox" name="sourceField" type="text" class="form-control" placeholder = "Where did you come from?" >
+                <input id="destinationTextBox" name="destinationField" type="text" class="form-control" placeholder = "Where do you want to go?">
+                <input id="findItButton" type="button" onclick="validate_route_fields();" class="btn btn-default" value="Show me the way!">
             </div>                 
         </form>
         <a class = "navbar-brand navbar-right appear" id="helpbutton" href = "#getIns" data-toggle="modal"><img src = "<?php echo base_url(); ?>assets/images/quest.png" class = "headpic"></a>
+        <a class = "navbar-brand navbar-right appear"  id="logoutbutton" href = "<?php echo base_url(); ?>index.php/pages/logout" data-toggle="modal"><img src = "<?php echo base_url(); ?>assets/images/logout-icon.png" class = "headpic"></a>
     </div>
 
 
@@ -124,13 +125,15 @@
                     </div>
                 </div>
                 <hr class = "gdivider">
+                
                 <form role="search">
+
                     <div class="form-group">
                         <input id="sourceTextBox_pop" name="sourceField" type="text" class="form-control" placeholder="Where did you come from?">
                         <br/>
                         <input id="destinationTextBox_pop" name="destinationField" type="text" class="form-control" placeholder="Where do you want to go?">
                         <br/>
-                        <input id="findItButton_pop" type="button" onclick="routeAddress();" class="btn btn-success btn-group-justified" value="Show me the way!">                            
+                        <input id="findItButton_pop" type="button" onclick="validate_route_fields();" class="btn btn-success btn-group-justified" value="Show me the way!">                            
                     </div>
 
                 </form>

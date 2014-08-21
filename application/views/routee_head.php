@@ -74,7 +74,7 @@
                                         '<form action="ajax-save.php" method="POST" name="SaveMarker" id="SaveMarker">' +
                                         '<label for="pAddress"><span>Address :</span> <textarea disabled name="address_ta" class="save-add" maxlength="200" placeholder= "Address">' + results[0].formatted_address + '</textarea></label>' +
                                         '<label for="pType"><span>Area Type :</span> <select name="pType" class="save-type">' + typeConcat + '</select></label>' +
-                                        '<label for="pDesc"><span>Event Details</span><textarea name="pDesc" class="save-desc" placeholder="Enter Details" maxlength="200">' + " " + '</textarea></label>' +
+                                        '<label for="pDesc"><span>Event Details</span><textarea name="pDesc" class="save-desc" placeholder="Enter Details" maxlength="200">' + "" + '</textarea></label>' +
                                         '</form>' +
                                         '</div></p><button name="save-marker" class="save-marker">Save Report!</button>';
 
@@ -339,12 +339,9 @@
                         var mType = contentString.find('select.save-type')[0].value; //type of marker
                         var mDesc = contentString.find('textarea.save-desc')[0].value; //description input field value
 
-                        if (mDesc === '')
-                        {
-                            alert("Please enter Description!");
-                        } else {
+                        
                             save_marker(marker, mDesc, mType, mReplace, mAddress);
-                        }
+                        
                     });
 
 
@@ -361,46 +358,66 @@
 
             //------------------SAVE MARKER TO DB FUNCTION---------------------------
             function save_marker(Marker, mDesc, mType, replaceWin, mAddress)
-            {
-                //Save new marker using jQuery Ajax
-                var mLatLang = Marker.getPosition().toUrlValue();
-                var date = new Date();
-                date = date.getFullYear() + '-' +
-                        ('00' + (date.getMonth() + 1)).slice(-2) + '-' +
-                        ('00' + date.getDate()).slice(-2) + ' ' +
-                        ('00' + date.getHours()).slice(-2) + ':' +
-                        ('00' + date.getMinutes()).slice(-2) + ':' +
-                        ('00' + date.getSeconds()).slice(-2);
-                console.log(mLatLang);
-                console.log(date);
-                var userID = '<?php echo $this->session->userdata('logged_in')['id'] ?>';
-                var splitLatLng = mLatLang.split(',');
-                var myData = {description: mDesc, lat: splitLatLng[0], lng: splitLatLng[1], type: mType, Address: mAddress, date: date, deleted: 'no', report_id: userID};
-                var iconPath;
-                if (mType === "Accident")
-                    iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_accident.png";
-                else if (mType === "Construction")
-                    iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_construction.png";
-                else if (mType === "Heavy Traffic")
-                    iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_traffic.png";
-                else if (mType === "Flood")
-                    iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_flood.png";
-                else
-                    iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_others.png";
-                console.log(replaceWin);
+            {   
                 $.ajax({
                     type: "POST",
-                    url: "http://localhost/Routee-secure/index.php/pages/save_marker",
-                    data: myData,
+                    url: "http://localhost/Routee-secure/index.php/pages/validate_desc",
+                    data: {'desc':mDesc},
                     success: function(data) {
-                        replaceWin.html(data);
-                        Marker.setDraggable(false);
-                        Marker.setIcon(iconPath);
+                        
+                        //Save new marker using jQuery Ajax
+                        var mLatLang = Marker.getPosition().toUrlValue();
+                        var date = new Date();
+                        date = date.getFullYear() + '-' +
+                                ('00' + (date.getMonth() + 1)).slice(-2) + '-' +
+                                ('00' + date.getDate()).slice(-2) + ' ' +
+                                ('00' + date.getHours()).slice(-2) + ':' +
+                                ('00' + date.getMinutes()).slice(-2) + ':' +
+                                ('00' + date.getSeconds()).slice(-2);
+                        console.log(mLatLang);
+                        console.log(date);
+                        var userID = '<?php echo $this->session->userdata('logged_in')['id'] ?>';
+                        var splitLatLng = mLatLang.split(',');
+                        var myData = {description: mDesc, lat: splitLatLng[0], lng: splitLatLng[1], type: mType, Address: mAddress, date: date, deleted: 'no', report_id: userID};
+                        var iconPath;
+                        if (mType === "Accident")
+                            iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_accident.png";
+                        else if (mType === "Construction")
+                            iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_construction.png";
+                        else if (mType === "Heavy Traffic")
+                            iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_traffic.png";
+                        else if (mType === "Flood")
+                            iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_flood.png";
+                        else
+                            iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_others.png";
+                        console.log(replaceWin);
+                        $.ajax({
+                            type: "POST",
+                            url: "http://localhost/Routee-secure/index.php/pages/save_marker",
+                            data: myData,
+                            success: function(data) {
+                                replaceWin.html(data);
+                                Marker.setDraggable(false);
+                                Marker.setIcon(iconPath);
+                            },
+                            error: function(xhr, ajaxOptions, thrownError) {
+                                alert(thrownError);
+                            }
+                        });
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
-                        alert(thrownError);
+
+                        if(xhr.status == 400){
+                              var m = $.parseJSON(xhr.responseText);
+                              alert(m['message']);
+
+                        }
+                          
                     }
                 });
+                
+
+                
             }
 
             //------------------REMOVE MARKER FUNCTION---------------------------
@@ -548,51 +565,64 @@
                 renderers = [];
             }
 
+            
+            function validate_route_fields(){
+                var source = $('#sourceTextBox').val();
+                var destination = $("#destinationTextBox").val();
+                 $.ajax({
+                    type: "POST",
+                    url: "http://localhost/Routee-secure/index.php/pages/validate_route_fields",
+                    data: {'source':source, 'destination':destination},
+                    success: function(data) {
+                        
+                        routeAddress();
+                    },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            if(xhr.status == 400){
+                              var m = $.parseJSON(xhr.responseText);
+                              alert(m['message']);
 
-            //VARIABLES FROM INDEX PHP INPUT
-            var source = '<?php echo $source; ?>';
-            var destination = '<?php echo $destination; ?>';
+                            }
+                        }
+                    });
 
+            }
             function routeAddress() {
+               
+                    
+                        var directionsService = new google.maps.DirectionsService();
+
+                        //RESET PANEL
+                        document.getElementById('color-table').innerHTML = "";
+                        var colorTableHeader = document.createElement('div');
+                        colorTableHeader.className = "row-fluid tableheader";
 
 
-                var directionsService = new google.maps.DirectionsService();
 
-                //RESET PANEL
-                document.getElementById('color-table').innerHTML = "";
-                var colorTableHeader = document.createElement('div');
-                colorTableHeader.className = "row-fluid tableheader";
+                        document.getElementById('color-table').appendChild(colorTableHeader);
 
+                        document.getElementById('instruction-table').innerHTML = "";
+                        var instTableHeader = document.createElement('div');
+                        instTableHeader.className = "row-fluid tableheader";
+                        document.getElementById('instruction-table').appendChild(instTableHeader);
 
+                        //REMOVE PREVIOUS POLYLINES
+                        removePolylines();
 
-                document.getElementById('color-table').appendChild(colorTableHeader);
+                        var source;
+                        var destination;
+                        if (!$('.infoslide').is(":visible"))
+                        {
+                            source = document.getElementById('sourceTextBox').value;
+                            destination = document.getElementById('destinationTextBox').value;
+                        } else 
+                        {
+                            source = document.getElementById('sourceTextBox_pop').value;
+                            destination = document.getElementById('destinationTextBox_pop').value;
+                        } 
 
-                document.getElementById('instruction-table').innerHTML = "";
-                var instTableHeader = document.createElement('div');
-                instTableHeader.className = "row-fluid tableheader";
-                document.getElementById('instruction-table').appendChild(instTableHeader);
-
-                //REMOVE PREVIOUS POLYLINES
-                removePolylines();
-
-                var source;
-                var destination;
-
-                if (document.getElementById('sourceTextBox').value != "" && document.getElementById('destinationTextBox').value != "")
-                {
-                    source = document.getElementById('sourceTextBox').value;
-                    destination = document.getElementById('destinationTextBox').value;
-                } else if (document.getElementById('sourceTextBox_pop').value != "" && document.getElementById('destinationTextBox_pop').value != "")
-                {
-                    source = document.getElementById('sourceTextBox_pop').value;
-                    destination = document.getElementById('destinationTextBox_pop').value;
-                } else {
-                    source = "";
-                    destination = "";
-                }
-
-
-                geocoder.geocode({'address': source}, function(results, status) {
+                     
+                    geocoder.geocode({'address': source}, function(results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         startLocation = results[0].geometry.location;
 
@@ -633,9 +663,9 @@
                                             routes = response.routes;
                                             var legs = response.routes[index++].legs;
                                             var steps;
-
+                                            
                                             for (i = 0; i < legs.length; i++) {
-                                                steps = legs[i].steps;
+                                                 steps = legs[i].steps;
                                                 for (j = 0; j < steps.length; j++) {
                                                     var nextSegment = steps[j].path;
                                                     console.log(steps[j].instructions);
@@ -646,7 +676,7 @@
                                                 }
                                             }
 
-
+                                            
                                             var count = 0;
 
                                             events.forEach(function(element, index) {
@@ -667,15 +697,15 @@
                                             switch (index - 1) {
                                                 case 0:
                                                     color = '#2ecc71';
-                                                    colorimage.src = "<?php echo base_url(); ?>assets/images/green-colorpanel.png";
+                                                    colorimage.src = "<?php echo base_url();?>assets/images/green-colorpanel.png";
                                                     break;
                                                 case 1:
                                                     color = '#2980b9';
-                                                    colorimage.src = "<?php echo base_url(); ?>assets/images/blue-colorpanel.png";
+                                                    colorimage.src = "<?php echo base_url();?>assets/images/blue-colorpanel.png";
                                                     break;
                                                 case 2:
                                                     color = '#9b59b6';
-                                                    colorimage.src = "<?php echo base_url(); ?>assets/images/purple-colorpanel.png";
+                                                    colorimage.src = "<?php echo base_url();?>assets/images/purple-colorpanel.png";
                                                     break;
                                             }
 
@@ -689,12 +719,12 @@
                                                 }
 
                                             };
-
-
+                                            
+                                            
                                             var cRow = document.createElement('div');
 
                                             cRow.id = index;
-                                            cRow.onclick = function() {
+                                            cRow.onclick = function(){
                                                 displaySelectedRoute(this);
                                             };
                                             cRow.className = "span2 crow";
@@ -703,15 +733,15 @@
                                             instTableHeader.innerHTML = "Directions";
                                             document.getElementById('color-table').appendChild(cRow);
                                             cRow.appendChild(colorimage);
-                                            if (count > 1 || count == 0)
-                                                cRow.innerHTML += " has " + count + " obstructions. - " + legs[0].distance.text;
+                                            if(count > 1 || count == 0)
+                                                cRow.innerHTML += " has " + count + " obstructions. - "+legs[0].distance.text;
                                             else
-                                                cRow.innerHTML += " has " + count + " obstruction. - " + legs[0].distance.text;
-
-                                            displayInstructions(index - 1);
+                                                cRow.innerHTML += " has " + count + " obstruction. - "+legs[0].distance.text;
+                                                
+                                            displayInstructions(index-1);
 
                                             directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-                                            directionsDisplay.setOptions({directions: response, routeIndex: index - 1});
+                                            directionsDisplay.setOptions({directions:response,routeIndex:index-1});
                                             directionsDisplay.setMap(map);
                                             renderers.push(directionsDisplay);
 
@@ -723,8 +753,8 @@
                                         map.fitBounds(bounds);
                                     } else
                                         alert("Routing failed!");
-
-
+                                        
+                                    
 
                                 });
 
@@ -736,9 +766,7 @@
 
             }
             window.onload = function() {
-                document.getElementById('findItButton').onclick = function() {
-                    routeAddress();
-                };
+                
                 document.getElementById('findItButton_pop').onclick = function() {
                     routeAddress();
                 };

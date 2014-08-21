@@ -53,18 +53,18 @@
                         <h2 align = "center"> Register </h2>
                         <br>
                         <?php echo form_open('pages/register', array('id' => 'registerForm')); ?>
-                        <input name="userRegisterField" id = "userRegisterField" type="text" class="form-control" placeholder="Username">
-                        <br/>
-                        <input name="passRegisterField" id = "passRegisterField" type="password" class="form-control" placeholder="Password">
-                        <br/>
-                        <input name="emailRegisterField" id = "emailRegisterField" type="text" class="form-control" placeholder="Email">
-                        <br>
-                        <br>
-                        <div class="btn-group btn-group-justified">
-                            <div class="btn-group">
-                                <button type="submit" name="submitRegister" class="btn btn-success"><i class="fa fa-arrows"> </i> Submit</button>
+                            <input name="userRegisterField" id = "userRegisterField" type="text" class="form-control" placeholder="Username">
+                            <br/>
+                            <input name="passRegisterField" id = "passRegisterField" type="password" class="form-control" placeholder="Password">
+                            <br/>
+                            <input name="emailRegisterField" id = "emailRegisterField" type="text" class="form-control" placeholder="Email">
+                            <br>
+                            <br>
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group">
+                                    <button type="submit" name="submitRegister" class="btn btn-success"><i class="fa fa-arrows"> </i> Submit</button>
+                                </div>
                             </div>
-                        </div>
 
                         </form> <!-- form post end -->
 
