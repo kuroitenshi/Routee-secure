@@ -45,8 +45,10 @@ class Model extends CI_Model {
 
 
         if ($query->num_rows() == 1 && $query->result_array()[0]['password'] == hash('sha256', $password, false)) {
+            $this->loginLog($username, "Login SUCCESS");
             return $query->result();
         } else {
+            loginlog($username, "Login FAILED");
             return false;
         }
     }
@@ -71,6 +73,9 @@ class Model extends CI_Model {
             $data_pass['email'] = $email;
             $data_pass['password_id'] = $data['user_id'];
             $this->db->insert('account_details', $data_pass);
+            
+            $this->loginLog($username, "REGISTER");
+            
             return $data;
         }
     }
@@ -88,7 +93,27 @@ class Model extends CI_Model {
                 'date' => date('Y-m-d H:i:s')
             );
         $this->db->insert('activity', $data);
-
+        
+    }
+    
+    public function loginLog($user, $success){
+        $logman = new LogManager();
+        
+        $this->load->library('session');
+        $session_id = $this->session->userdata('session_id');
+        $ip = $this->session->userdata('ip_address');
+        
+        $logman->writeLoginToLog($user, $session_id, $ip, $success);
+    }
+    
+    public function activityLog($user, $activity){
+         $logman = new LogManager();
+        
+        $this->load->library('session');
+        $session_id = $this->session->userdata('session_id');
+        $ip = $this->session->userdata('ip_address');
+        
+        $logman->writeActivityLog($user, $session_id, $ip, $activity);
     }
 
     public function add_marker($data) {
