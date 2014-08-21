@@ -26,6 +26,7 @@ class Pages extends CI_Controller {
         $this->load->model('model');
         $this->load->library('session');
         $this->load->helper('url');
+        $this->load->helper('security');
     }
 
     public function index() {
@@ -36,8 +37,8 @@ class Pages extends CI_Controller {
             $session_data = $this->session->userdata('logged_in');
             $data['username'] = $session_data['username'];
             $data['login_status'] = TRUE;
-            $this->load->view('home_head');
-            $this->load->view('home', $data);
+            $this->load->view('routee_head');
+            $this->load->view('routee', $data);
         } else {
             $data['login_status'] = FALSE;
             $this->load->view('home_head');
@@ -64,11 +65,13 @@ class Pages extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('userRegisterField', 'Username', 'trim|required|xss_clean');
         $this->form_validation->set_rules('passRegisterField', 'Password', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('emailRegisterField', 'Email', 'trim|required|xss_clean|callback_check_registration');
+        $this->form_validation->set_rules('emailRegisterField', 'Email', 'trim|required|valid_email|callback_check_registration|xss_clean');
 
         $this->form_validation->run();
         $this->index();
     }
+
+
 
     public function check_database($password) {
 
@@ -124,38 +127,26 @@ class Pages extends CI_Controller {
             array(
                 'field' => 'sourceField',
                 'label' => 'Source',
-                'rules' => 'required'
+                'rules' => 'trim|required|xss_clean'
             ),
             array(
                 'field' => 'destinationField',
                 'label' => 'Destination',
-                'rules' => 'required'
+                'rules' => 'trim|required|xss_clean'
             )
         );
 
         $this->form_validation->set_rules($config);
         if ($this->form_validation->run() == FALSE) {
-            $this->view_home();
-        } else {
+            $this->index();
+            echo '<script>alert("'.strip_tags(validation_errors()).'"); </script>';
 
-            $source = $this->input->post('sourceField');
-            $destination = $this->input->post('destinationField');
-            if (!empty($source) && !empty($destination)) {
-                $data['source'] = $source;
-                $data['destination'] = $destination;
-            } else {
-                $data['source'] = '';
-                $data['destination'] = '';
-            }
-
-            $data['type'] = '';
-            $data['place'] = '';
-            $data['Description'] = '';
-
-            $this->load->view('routee_head', $data);
-            $this->load->view('routee', $data);
+        } else{
+            $this->load->view("routee_head");
+            echo '<script type="text/javascript">routeAddress();</script>';
         }
-    }
+            
+   }
 
     public function submit_report() {
         $this->load->helper(array('form', 'url'));
@@ -234,6 +225,39 @@ class Pages extends CI_Controller {
         echo $this->model->get_markers();
     }
 
+    public function validate_desc(){
+        
+        $mdesc = $this->input->post('desc', true);
+        $mdesc = htmlspecialchars($mdesc);
+        $mdesc = trim($mdesc);
+        
+        if($mdesc == '')
+        {   
+            $this->output->set_status_header('400'); //Triggers the jQuery error callback
+            $message['message'] = "Event description is empty.";
+            echo json_encode($message);
+        }
+
+    }
+
+    public function validate_route_fields(){
+        
+        $source = $this->input->post('source', true);
+        $destination = $this->input->post('destination', true);
+        $source = htmlspecialchars($source);
+        $source = trim($source);
+        $destination = htmlspecialchars($destination);
+        $destination = trim($destination);
+
+
+        if($destination == '' || $source == '')
+        {   
+            $this->output->set_status_header('400'); //Triggers the jQuery error callback
+            $message['message'] = "Some fields are empty";
+            echo json_encode($message);
+        }
+
+    }
     
 
     public function debug_to_console($data) {
