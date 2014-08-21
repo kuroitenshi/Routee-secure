@@ -94,6 +94,20 @@ class Pages extends CI_Controller {
         }
     }
 
+    public function captcha_check() {
+        require_once('./application/helpers/recaptchalib.php');
+        $privatekey = "6Lca-fgSAAAAAMVeHdOc-SKGq2x1KHPCv0FsoTOc";
+        $resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+
+        if (!$resp->is_valid) {             
+            echo "<script>alert('Please enter the characters in the image correctly.'); var resp = 0;</script>";
+            $this->index();
+        } else {
+           echo "<script>var resp = 1;</script>";
+            $this->index();
+        }
+    }
+
     public function check_registration($email) {
 
         $username = $this->input->post('userRegisterField');
