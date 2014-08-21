@@ -106,7 +106,7 @@
                             var type = $(this).find('element>type').text();
                             var date = $(this).find('element>date').text();
                             date = date.split(" ");
-                            var desc = '<h6> Date:  ' + date[0] + '  Time:  ' + date[1] + ' </h6>' + $(this).find('element>Address').text() + '</p><hr>' + '<p>' + $(this).find('element>description').text() + '</p>';
+                            var desc = '<h5> Reported by:  ' + $(this).find('element>username').text() + ' </h5><h6> Date:  ' + date[0] + '  Time:  ' + date[1] + ' </h6>' + $(this).find('element>Address').text() + '</p><hr>' + '<p>' + $(this).find('element>description').text() + '</p>';
                             var point = new google.maps.LatLng(parseFloat($(this).find('element>lat').text()), parseFloat($(this).find('element>lng').text()));
                             var iconPath;
 
@@ -126,12 +126,12 @@
                     });
                 });
 
-                function handleNoGeolocation(errorFlag) 
+                function handleNoGeolocation(errorFlag)
                 {
                     if (errorFlag == true) {
-                        alert("Geolocation service failed.");                     
+                        alert("Geolocation service failed.");
                     } else {
-                        alert("Your browser doesn't support geolocation.");                        
+                        alert("Your browser doesn't support geolocation.");
                     }
                     map.setCenter(initialLocation);
                 }
@@ -322,14 +322,14 @@
                         MapDesc +
                         '</span>' +
                         '</div></div>');
-                if(!DragAble)
+                if (!DragAble)
                 {
-                    
+
                 }
                 var markerinfowindow = new google.maps.InfoWindow();
                 markerinfowindow.setContent(contentString[0]);
-              
-                var saveBtn = contentString.find('button.save-marker')[0];                
+
+                var saveBtn = contentString.find('button.save-marker')[0];
                 if (typeof saveBtn !== 'undefined')
                 {
                     //add click listner to save marker button
@@ -373,8 +373,9 @@
                         ('00' + date.getSeconds()).slice(-2);
                 console.log(mLatLang);
                 console.log(date);
+                var userID = '<?php echo $this->session->userdata('logged_in')['id'] ?>';
                 var splitLatLng = mLatLang.split(',');
-                var myData = {description: mDesc, lat: splitLatLng[0], lng: splitLatLng[1], type: mType, Address: mAddress, date: date, deleted: 'no'};
+                var myData = {description: mDesc, lat: splitLatLng[0], lng: splitLatLng[1], type: mType, Address: mAddress, date: date, deleted: 'no', report_id: userID};
                 var iconPath;
                 if (mType === "Accident")
                     iconPath = "<?php echo base_url(); ?>assets/images/custom_markers/marker_accident.png";

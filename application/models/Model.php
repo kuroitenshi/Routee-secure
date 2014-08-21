@@ -5,8 +5,6 @@
 /*
  * 	Model for collections
  *   
- * 	Joren Sorilla
- * 	2014-05-08
  */
 
 class Model extends CI_Model {
@@ -22,7 +20,7 @@ class Model extends CI_Model {
      */
     public function get_markers() {
         $this->db->select('*');
-        $q = $this->db->get('markers');
+        $q = $this->db->query('SELECT * FROM markers, users WHERE markers.report_id = users.user_id');
 
         if ($q->num_rows() > 0) {
 
@@ -38,48 +36,35 @@ class Model extends CI_Model {
         }
     }
 
-
-
-     function login($username, $password)
-     {
-        
-        
-
-        $this->db-> limit(1);
+    function login($username, $password) {
+        $this->db->limit(1);
         $query = $this->db->query('SELECT user_id, username, password 
                           FROM users u
                           INNER JOIN account_details ad ON (u.user_id = ad.password_id)
                           WHERE u.username = ?;', array($username));
 
 
-        if($query->num_rows() == 1 && $query->result_array()[0]['password'] == hash('sha256', $password, false))
-        {
+        if ($query->num_rows() == 1 && $query->result_array()[0]['password'] == hash('sha256', $password, false)) {
             return $query->result();
-        }
-        else
-        {
+        } else {
             return false;
         }
-     }
+    }
 
-     function register($username, $password, $email)
-     {  
+    function register($username, $password, $email) {
 
-        $this->db-> select('username');
-        $this->db-> from('users');
-        $this->db-> where('username', $username);
-        $this->db-> limit(1);
+        $this->db->select('username');
+        $this->db->from('users');
+        $this->db->where('username', $username);
+        $this->db->limit(1);
 
-        $query = $this->db-> get();
+        $query = $this->db->get();
 
-        if($query->num_rows() == 1)
-        {
+        if ($query->num_rows() == 1) {
             return false;
-        }
-        else
-        {   
+        } else {
             $data['username'] = $username;
-            
+
             $this->db->insert('users', $data);
             $data['user_id'] = $this->db->insert_id();
             $data_pass['password'] = hash('sha256', $password, false);
@@ -88,9 +73,7 @@ class Model extends CI_Model {
             $this->db->insert('account_details', $data_pass);
             return $data;
         }
-     }
-
-
+    }
 
     public function remove_marker($lat, $lng, $deleted) {
         if ($deleted == 'true')
