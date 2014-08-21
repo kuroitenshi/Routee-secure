@@ -81,6 +81,16 @@ class Model extends CI_Model {
         return;
     }
 
+    public function log_activity($data){
+        $data = array(
+                'user_id' => $user_id,
+                'action_log' => $action_log,
+                'date' => date('Y-m-d H:i:s')
+            );
+        $this->db->insert('activity', $data);
+
+    }
+
     public function add_marker($data) {
         $this->db->insert('markers', $data);
     }
