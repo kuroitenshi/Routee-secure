@@ -1,10 +1,9 @@
-<<<<<<< HEAD
-<body onload = "routeAddress();">
-=======
+
+
+
 
 
 <body>
->>>>>>> 3d239f2486f085ab0771cc1ef029e2764c69f7a0
 
     <div class = "navbar navbar-default navbar-fixed-top visi">
         <a href = "index.php" class = "navbar-brand"><img src = "<?php echo base_url(); ?>assets/images/routee.png" class ="headpic"></a>
@@ -17,6 +16,30 @@
         </form>
         <a class = "navbar-brand navbar-right appear" id="helpbutton" href = "#getIns" data-toggle="modal"><img src = "<?php echo base_url(); ?>assets/images/quest.png" class = "headpic"></a>
         <a class = "navbar-brand navbar-right appear"  id="logoutbutton" href = "<?php echo base_url(); ?>index.php/pages/logout" data-toggle="modal"><img src = "<?php echo base_url(); ?>assets/images/logout-icon.png" class = "headpic"></a>
+    </div>
+
+     <div class = "modal fade" role = "dialog" id="captchaModal">
+        <div class = "modal-dialog">
+            <div class = "modal-content">
+
+                <div class = "modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class = "modal-title" align = "center"> Verification</h4>
+                </div>
+                <div class = "modal-body">   
+                    <?php echo form_open('pages/captcha_check', array('id' => 'captchaForm')); ?>  
+                        <?php
+                        require_once('./application/helpers/recaptchalib.php');
+                        $publickey = "6Lca-fgSAAAAAHpi7WFy4ddHZCR2LeYDHHoKPsZN"; // you got this from the signup page
+                        echo recaptcha_get_html($publickey);
+                        echo form_error('recaptcha_challenge_field');
+                        ?>                
+                        <input class="btn btn-primary" type="submit" value="Submit Captcha">
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class = "modal fade" role = "dialog" id="captchaModal">
