@@ -1,7 +1,7 @@
 
 
 <?php
-
+include('application/models/LogManager.php');
 /*
  * 	Model for collections
  *   
@@ -106,10 +106,12 @@ class Model extends CI_Model {
         $logman->writeLoginToLog($user, $session_id, $ip, $success);
     }
     
-    public function activityLog($user, $activity){
+    public function activityLog($activity){
          $logman = new LogManager();
         
+        
         $this->load->library('session');
+        $user =  $this->session->userdata('logged_in')['username'];
         $session_id = $this->session->userdata('session_id');
         $ip = $this->session->userdata('ip_address');
         

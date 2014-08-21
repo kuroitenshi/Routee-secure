@@ -56,6 +56,9 @@ class Pages extends CI_Controller {
     }
 
     public function logout() {
+        $this->load->library('session');
+        $user =  $this->session->userdata('logged_in')['username'];
+        $this->model->loginLog($user, "LOGOUT");
         $this->session->unset_userdata('logged_in');
         session_destroy();
         redirect('/');
@@ -77,6 +80,7 @@ class Pages extends CI_Controller {
 
         $username = $this->input->post('userField');
         $result = $this->model->login($username, $password);
+        
 
         if ($result != FALSE) {
             $sess_array = array();

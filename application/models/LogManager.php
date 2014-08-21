@@ -69,7 +69,7 @@ class LogManager {
     
     public function writeActivityLog($user, $session_id, $ip, $activity){
         
-        $res = 'date=' . date('H:i:s') .  ' username=' . $user . ' ip=' . $ip . ' session id=' . $session_id . ' activity=' . $activity;
+        $res = 'date=' . date('H:i:s') .  ' username=' . $user . ' ip=' . $ip . ' session id=' . $session_id . ' activity=' . $activity . "\n";
         date('H:i:s');
         
         
