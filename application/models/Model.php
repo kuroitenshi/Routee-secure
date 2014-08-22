@@ -119,6 +119,7 @@ class Model extends CI_Model {
     }
 
     public function add_marker($data) {
+        $this->activityLog("REPORT");
         $this->db->insert('markers', $data);
     }
 

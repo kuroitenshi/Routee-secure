@@ -161,6 +161,7 @@ class Pages extends CI_Controller {
 
         } else{
             $this->load->view("routee_head");
+            $this->Model->activityLog("SEARCH ROUTE");
             echo '<script type="text/javascript">routeAddress();</script>';
         }
             
